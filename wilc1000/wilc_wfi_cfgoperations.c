@@ -1354,8 +1354,6 @@ static int WILC_WFI_add_key(struct wiphy *wiphy, struct net_device *netdev,u8 ke
 				#ifdef WILC_AP_EXTERNAL_MLME
 				if(priv->wdev->iftype == NL80211_IFTYPE_AP)
 				{
-
-					priv->WILC_WFI_wep_default = key_index;
 					priv->WILC_WFI_wep_key_len[key_index] = params->key_len;
 					WILC_memcpy(priv->WILC_WFI_wep_key[key_index], params->key, params->key_len);
 
@@ -1372,8 +1370,9 @@ static int WILC_WFI_add_key(struct wiphy *wiphy, struct net_device *netdev,u8 ke
 					else
 						u8mode = ENCRYPT_ENABLED | WEP | WEP_EXTENDED;
 
-					host_int_add_wep_key_bss_ap(priv->hWILCWFIDrv,params->key,params->key_len,key_index,u8mode,tenuAuth_type);
-				break;
+					host_int_add_wep_key_bss_ap(priv->hWILCWFIDrv,params->key,params->key_len,
+						key_index,u8mode,tenuAuth_type);
+					break;
 				}
 				#endif
 				if(WILC_memcmp(params->key,priv->WILC_WFI_wep_key[key_index],params->key_len))
@@ -1389,7 +1388,8 @@ static int WILC_WFI_add_key(struct wiphy *wiphy, struct net_device *netdev,u8 ke
 						for(i=0;i<params->key_len;i++)
 							PRINT_INFO(CFG80211_DBG, "WEP key value[%d] = %d\n", i, params->key[i]);
 					}
-					host_int_add_wep_key_bss_sta(priv->hWILCWFIDrv,params->key,params->key_len,key_index);
+					host_int_add_wep_key_bss_sta(priv->hWILCWFIDrv,params->key,params->key_len,
+						key_index);
 				}
 
 				break;
@@ -1747,7 +1747,7 @@ static int WILC_WFI_del_key(struct wiphy *wiphy, struct net_device *netdev,
 
 		}
 
-		if(key_index >= 0 && key_index <=3)
+		if(key_index >= 0 && key_index <= 3)
 		{
 			WILC_memset(priv->WILC_WFI_wep_key[key_index], 0, priv->WILC_WFI_wep_key_len[key_index]);
 			priv->WILC_WFI_wep_key_len[key_index] = 0;
@@ -1844,18 +1844,9 @@ static int WILC_WFI_set_default_key(struct wiphy *wiphy,struct net_device *netde
 {
 	WILC_Sint32 s32Error = WILC_SUCCESS;
 	struct WILC_WFI_priv* priv;
-
-
 	priv = wiphy_priv(wiphy);
-
 	PRINT_D(CFG80211_DBG,"Setting default key with idx = %d \n", key_index);
-
-	if(key_index!= priv->WILC_WFI_wep_default)
-	{
-
-		host_int_set_WEPDefaultKeyID(priv->hWILCWFIDrv,key_index);
-	}
-
+	host_int_set_WEPDefaultKeyID(priv->hWILCWFIDrv,key_index);
 	return s32Error;
 }
 

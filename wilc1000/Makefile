@@ -39,7 +39,7 @@ wilc1000-objs := wilc_wfi_netdevice.o wilc_wfi_cfgoperations.o linux_wlan.o linu
 wilc1000-$(CONFIG_WILC1000_SDIO) += linux_wlan_sdio.o
 wilc1000-$(CONFIG_WILC1000_SPI) += linux_wlan_spi.o
 
-WILC1000_SRC_VERSION = 13.1
+WILC1000_SRC_VERSION = 13.3
 PATCHLEVEL = 1
 WILC1000_FW_VERSION = 0
 

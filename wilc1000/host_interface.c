@@ -3003,52 +3003,48 @@ static int Handle_Key(void * drvHandler,tstrHostIFkeyAttr* pstrHostIFkeyAttr)
 			{
 				
 				PRINT_D(HOSTINF_DBG,"Handling WEP key\n");
-				PRINT_D(GENERIC_DBG,"ID Hostint is %d\n",(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8Wepidx));
+				PRINT_D(GENERIC_DBG,"ID Hostint is %d\n",
+					(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8Wepidx));
 				strWIDList[0].u16WIDid = (WILC_Uint16)WID_11I_MODE;
 				strWIDList[0].enuWIDtype = WID_CHAR;
 				strWIDList[0].s32ValueSize = sizeof(WILC_Char);
-				strWIDList[0].ps8WidVal = (WILC_Sint8*)(&(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8mode));
+				strWIDList[0].ps8WidVal = (WILC_Sint8*)
+					(&(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8mode));
 
-				strWIDList[1].u16WIDid     = WID_AUTH_TYPE;
-    				strWIDList[1].enuWIDtype  = WID_CHAR;
-				strWIDList[1].s32ValueSize = sizeof(WILC_Char);
-    				strWIDList[1].ps8WidVal= (WILC_Sint8*)(&(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.tenuAuth_type));
-
-				strWIDList[2].u16WIDid	= (WILC_Uint16)WID_KEY_ID;
-				strWIDList[2].enuWIDtype	= WID_CHAR;
-
-				strWIDList[2].ps8WidVal	= (WILC_Sint8*)(&(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8Wepidx));
-				strWIDList[2].s32ValueSize = sizeof(WILC_Char);
-			
+				strWIDList[1].u16WIDid     	= WID_AUTH_TYPE;
+    			strWIDList[1].enuWIDtype  	= WID_CHAR;
+				strWIDList[1].s32ValueSize 	= sizeof(WILC_Char);
+    			strWIDList[1].ps8WidVal		= 
+						(WILC_Sint8*)(&(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.tenuAuth_type));
 				
-pu8keybuf = (WILC_Uint8*)WILC_MALLOC(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8WepKeylen);								
-																				   
+				
+				pu8keybuf = (WILC_Uint8*)WILC_MALLOC
+					(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8WepKeylen + 2);																				   
 
 				if(pu8keybuf == NULL)
 				{
-						PRINT_ER("No buffer to send Key\n");
-						return -1;
+					PRINT_ER("No buffer to send Key\n");
+					return -1;
 				}
+				pu8keybuf[0] = pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8Wepidx;
+				pu8keybuf[1] = pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8WepKeylen;
 				
-				WILC_memcpy(pu8keybuf,pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.pu8WepKey,
+				WILC_memcpy(&pu8keybuf[2],pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.pu8WepKey,
 						pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8WepKeylen);
-
 
 				WILC_FREE(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.pu8WepKey);				
 				
-				strWIDList[3].u16WIDid = (WILC_Uint16)WID_WEP_KEY_VALUE;
-				strWIDList[3].enuWIDtype = WID_STR;
-				strWIDList[3].s32ValueSize = pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8WepKeylen;
-				strWIDList[3].ps8WidVal = (WILC_Sint8*)pu8keybuf;
+				strWIDList[2].u16WIDid = (WILC_Uint16)WID_WEP_KEY_VALUE;
+				strWIDList[2].enuWIDtype = WID_STR;
+				strWIDList[2].s32ValueSize = 
+					pstrHostIFkeyAttr->uniHostIFkeyAttr.strHostIFwepAttr.u8WepKeylen + 2;
+				strWIDList[2].ps8WidVal = (WILC_Sint8*)pu8keybuf;
 
 			
-				s32Error = SendConfigPkt(SET_CFG, strWIDList, 4, WILC_TRUE,(WILC_Uint32)pstrWFIDrv);
+				s32Error = SendConfigPkt(SET_CFG, strWIDList, 3, WILC_TRUE,(WILC_Uint32)pstrWFIDrv);
 				WILC_FREE(pu8keybuf);
-
-
 			}
-			#endif
-			
+			#endif			
 			if(pstrHostIFkeyAttr->u8KeyAction & ADDKEY)
 			{
 				PRINT_D(HOSTINF_DBG,"Handling WEP key\n");
@@ -3088,7 +3084,7 @@ pu8keybuf = (WILC_Uint8*)WILC_MALLOC(pstrHostIFkeyAttr->uniHostIFkeyAttr.strHost
 				
 				s32Error = SendConfigPkt(SET_CFG, &strWID, 1, WILC_TRUE,(WILC_Uint32)pstrWFIDrv);
 		}
-		else
+		else if (pstrHostIFkeyAttr->u8KeyAction & DEFAULTKEY)
 		{
 			strWID.u16WIDid	= (WILC_Uint16)WID_KEY_ID;
 			strWID.enuWIDtype	= WID_CHAR;
@@ -3991,7 +3987,7 @@ static void Handle_AddStation(void* drvHandler,tstrWILC_AddStaParam* pstrStation
 	PRINT_D(HOSTINF_DBG,"Handling add station\n");
 	strWID.u16WIDid = (WILC_Uint16)WID_ADD_STA;
 	strWID.enuWIDtype = WID_BIN;
-	strWID.s32ValueSize =WILC_ADD_STA_LENGTH + pstrStationParam->u8NumRates;
+	strWID.s32ValueSize = WILC_ADD_STA_LENGTH + pstrStationParam->u8NumRates;
 
 	strWID.ps8WidVal = WILC_MALLOC(strWID.s32ValueSize);
 	if(strWID.ps8WidVal == NULL)

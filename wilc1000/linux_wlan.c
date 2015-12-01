@@ -2171,8 +2171,8 @@ int mac_open(struct net_device *ndev){
 			else
 			{
 				if(memcmp(g_linux_wlan->strInterfaceInfo[i^1].aBSSID, 
-				g_linux_wlan->strInterfaceInfo[i].aSrcAddress, 6))
-				{
+				g_linux_wlan->strInterfaceInfo[i^1].aSrcAddress, 6))
+				{	
 					/*if the other interface is connected as station , set mac 0*/
 					host_int_set_wfi_drv_handler(priv->hWILCWFIDrv,0);
 				}

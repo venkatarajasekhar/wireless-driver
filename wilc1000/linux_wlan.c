@@ -2572,32 +2572,32 @@ int mac_ioctl(struct net_device *ndev, struct ifreq *req, int cmd){
 
 			PRINT_INFO(GENERIC_DBG, "%s: Android private cmd \"%s\" on %s\n", __FUNCTION__, buff, req->ifr_name);
 
-			if (strnicmp(buff, "SCAN-ACTIVE", strlen("SCAN-ACTIVE")) == 0) {
+			if (strncasecmp(buff, "SCAN-ACTIVE", strlen("SCAN-ACTIVE")) == 0) {
 				PRINT_INFO(GENERIC_DBG, "%s, SCAN-ACTIVE command\n", __FUNCTION__);
-			}else if (strnicmp(buff, "SCAN-PASSIVE", strlen("SCAN-PASSIVE")) == 0) {
+			}else if (strncasecmp(buff, "SCAN-PASSIVE", strlen("SCAN-PASSIVE")) == 0) {
 				PRINT_INFO(GENERIC_DBG, "%s, SCAN-PASSIVE command\n", __FUNCTION__);
-			}else if (strnicmp(buff, "RXFILTER-START", strlen("RXFILTER-START")) == 0) {
+			}else if (strncasecmp(buff, "RXFILTER-START", strlen("RXFILTER-START")) == 0) {
 				PRINT_INFO(GENERIC_DBG, "%s, RXFILTER-START command\n", __FUNCTION__);
-			}else if (strnicmp(buff, "RXFILTER-STOP", strlen("RXFILTER-STOP")) == 0) {
+			}else if (strncasecmp(buff, "RXFILTER-STOP", strlen("RXFILTER-STOP")) == 0) {
 				PRINT_INFO(GENERIC_DBG, "%s, RXFILTER-STOP command\n", __FUNCTION__);
-			}else if (strnicmp(buff, "RXFILTER-ADD", strlen("RXFILTER-ADD")) == 0) {
+			}else if (strncasecmp(buff, "RXFILTER-ADD", strlen("RXFILTER-ADD")) == 0) {
 				int filter_num = *(buff + strlen("RXFILTER-ADD") + 1) - '0';
 				PRINT_INFO(GENERIC_DBG, "%s, RXFILTER-ADD command, filter_num=%d\n", __FUNCTION__, filter_num);
-			}else if (strnicmp(buff, "RXFILTER-REMOVE", strlen("RXFILTER-REMOVE")) == 0) {
+			}else if (strncasecmp(buff, "RXFILTER-REMOVE", strlen("RXFILTER-REMOVE")) == 0) {
 				int filter_num = *(buff + strlen("RXFILTER-REMOVE") + 1) - '0';
 				PRINT_INFO(GENERIC_DBG, "%s, RXFILTER-REMOVE command, filter_num=%d\n", __FUNCTION__, filter_num);
-			}else if (strnicmp(buff, "BTCOEXSCAN-START", strlen("BTCOEXSCAN-START")) == 0) {
+			}else if (strncasecmp(buff, "BTCOEXSCAN-START", strlen("BTCOEXSCAN-START")) == 0) {
 				PRINT_INFO(GENERIC_DBG, "%s, BTCOEXSCAN-START command\n", __FUNCTION__);
-			}else if (strnicmp(buff, "BTCOEXSCAN-STOP", strlen("BTCOEXSCAN-STOP")) == 0) {
+			}else if (strncasecmp(buff, "BTCOEXSCAN-STOP", strlen("BTCOEXSCAN-STOP")) == 0) {
 				PRINT_INFO(GENERIC_DBG, "%s, BTCOEXSCAN-STOP command\n", __FUNCTION__);
-			}else if (strnicmp(buff, "BTCOEXMODE", strlen("BTCOEXMODE")) == 0) {
+			}else if (strncasecmp(buff, "BTCOEXMODE", strlen("BTCOEXMODE")) == 0) {
 				PRINT_INFO(GENERIC_DBG, "%s, BTCOEXMODE command\n", __FUNCTION__);
-			}else if (strnicmp(buff, "SETBAND", strlen("SETBAND")) == 0) {
+			}else if (strncasecmp(buff, "SETBAND", strlen("SETBAND")) == 0) {
 				uint band = *(buff + strlen("SETBAND") + 1) - '0';
 				PRINT_INFO(GENERIC_DBG, "%s, SETBAND command, band=%d\n", __FUNCTION__, band);
-			}else if (strnicmp(buff, "GETBAND", strlen("GETBAND")) == 0) {
+			}else if (strncasecmp(buff, "GETBAND", strlen("GETBAND")) == 0) {
 				PRINT_INFO(GENERIC_DBG, "%s, GETBAND command\n", __FUNCTION__);
-			}else if (strnicmp(buff, "COUNTRY", strlen("COUNTRY")) == 0) {
+			}else if (strncasecmp(buff, "COUNTRY", strlen("COUNTRY")) == 0) {
 				char *country_code = buff + strlen("COUNTRY") + 1;
 				PRINT_INFO(GENERIC_DBG, "%s, COUNTRY command, country_code=%s\n", __FUNCTION__, country_code);
 			}else {
@@ -2628,8 +2628,7 @@ int mac_ioctl(struct net_device *ndev, struct ifreq *req, int cmd){
 						goto done;
 					}
 
-				if(strnicmp(buff,"RSSI",length) == 0) 
-				{
+			if (strncasecmp(buff, "RSSI", length) == 0) {
 
 					#ifdef USE_WIRELESS
 					priv = wiphy_priv(nic->wilc_netdev->ieee80211_ptr->wiphy);

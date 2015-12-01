@@ -11,6 +11,10 @@
 #include "wilc_wlan.h"
 #define INLINE static __inline
 
+#ifdef USE_ANTNENNA_SWITCHING
+#define ANTENNA_SWITCH_GPIO_NUM	3
+#endif
+
 /********************************************
 
 	Global
@@ -2158,6 +2162,7 @@ void wilc_bus_set_default_speed(void){
 	/* Restore bus speed to default.  */
 	g_wlan.hif_func.hif_set_default_bus_speed();
 }
+
 uint32_t init_chip(void)
 {
 	uint32_t chipid;
@@ -2196,8 +2201,23 @@ uint32_t init_chip(void)
 			return ret;
 		}
 	}
+#ifdef USE_ANTNENNA_SWITCHING
+	ret = g_wlan.hif_func.hif_read_reg(0x1408, &reg);
+	
 
+	reg &= ~(0xf<<(ANTENNA_SWITCH_GPIO_NUM*4));	
+	
+	ret = g_wlan.hif_func.hif_write_reg(0x1408, reg);
+	
+	/*Configure GPIO to be output*/	
+	ret = g_wlan.hif_func.hif_read_reg(0x20108, &reg);
+	ret = g_wlan.hif_func.hif_write_reg(0x20108, reg|(1<<ANTENNA_SWITCH_GPIO_NUM));
 
+	ret = g_wlan.hif_func.hif_read_reg(0x20100, &reg);
+	reg &= ~(1<<ANTENNA_SWITCH_GPIO_NUM);
+	/*Initially Enable antenna 1 and disable antenna 2 */
+	ret = g_wlan.hif_func.hif_write_reg(0x20100,reg);
+#endif
 	#if 0
 	if((chipid& 0xfff) < 0xf0) {
 		/* Setting MUX to probe sleep signal on pin 6 of J216*/
@@ -2233,6 +2253,30 @@ uint32_t init_chip(void)
 	return ret;
 
 }
+
+#ifdef USE_ANTNENNA_SWITCHING
+uint32_t wilc_switch_current_antenna(unsigned char antenna_num)
+{
+	
+	uint32_t reg,ret=0;
+	if(antenna_num > 1)
+		return 1;
+	
+	acquire_bus(ACQUIRE_AND_WAKEUP);
+	ret = g_wlan.hif_func.hif_read_reg(0x1408, &reg);
+	reg &= ~(0xf<<(ANTENNA_SWITCH_GPIO_NUM*4));
+	ret = g_wlan.hif_func.hif_write_reg(0x1408, reg);
+	/*Configure GPIO to be output*/
+	ret = g_wlan.hif_func.hif_read_reg(0x20108, &reg);
+	ret = g_wlan.hif_func.hif_write_reg(0x20108, reg|(1<<ANTENNA_SWITCH_GPIO_NUM));
+	ret = g_wlan.hif_func.hif_read_reg(0x20100, &reg);
+	reg &= ~(1<<ANTENNA_SWITCH_GPIO_NUM);
+	reg |= (antenna_num<<ANTENNA_SWITCH_GPIO_NUM);
+	ret = g_wlan.hif_func.hif_write_reg(0x20100,reg);
+	release_bus(RELEASE_ALLOW_SLEEP);
+	return 0;	
+}
+#endif
 
 uint32_t wilc_get_chipid(uint8_t update)
 {

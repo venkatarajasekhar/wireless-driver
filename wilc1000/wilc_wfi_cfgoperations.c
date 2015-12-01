@@ -4235,7 +4235,10 @@ static struct cfg80211_ops WILC_WFI_cfg80211_ops = {
 	#endif
 #endif
 	//.mgmt_tx_cancel_wait = WILC_WFI_mgmt_tx_cancel_wait,
+#if (defined WILC_SPI)
+#else
 	.set_power_mgmt = WILC_WFI_set_power_mgmt,
+#endif
 	.set_cqm_rssi_config = WILC_WFI_set_cqm_rssi_config,
 #endif
 	.suspend = WILC_WFI_suspend,

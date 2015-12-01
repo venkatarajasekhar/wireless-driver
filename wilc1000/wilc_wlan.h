@@ -321,5 +321,8 @@ typedef struct {
 	int (*rx_indicate)(uint8_t *, int, wilc_cfg_rsp_t *);
 	int (*cfg_init)(wilc_debug_func);
 } wilc_cfg_func_t;
+#ifdef USE_ANTNENNA_SWITCHING
+uint32_t wilc_switch_current_antenna(unsigned char antenna_num);
+#endif
 
 #endif

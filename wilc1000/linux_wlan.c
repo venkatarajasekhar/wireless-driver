@@ -2205,6 +2205,10 @@ int mac_open(struct net_device *ndev){
            						nic->g_struct_frame_reg[0].frame_type,nic->g_struct_frame_reg[0].reg);
    	WILC_WFI_frame_register(nic->wilc_netdev->ieee80211_ptr->wiphy,nic->wilc_netdev,
            						nic->g_struct_frame_reg[1].frame_type,nic->g_struct_frame_reg[1].reg);
+	/*the following call is optional and could be removed if it would call from another function*/
+#if defined(HAS_DUAL_IP_ANTENNA_DEV_MODULE) || defined(HAS_SINGLE_IP_ANTENNA_DEV_MODULE)
+	host_int_set_antenna(priv->hWILCWFIDrv,2);
+#endif		
    	netif_wake_queue(ndev); 
  	g_linux_wlan->open_ifcs++;
 	nic->mac_opened=1;

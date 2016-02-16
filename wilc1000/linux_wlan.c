@@ -1096,11 +1096,9 @@ static int linux_wlan_start_firmware(perInterface_wlan_t* nic){
 
 	static int timeout = 5;
 	int ret = 0;
-	struct sdio_func *func;
 	
 	/* start firmware */
 	PRINT_D(INIT_DBG,"Starting Firmware ...\n");
-	func = dev_to_sdio_func(wilc->dev);
 	ret = g_linux_wlan->oup.wlan_start();
 	if(ret < 0){
 		PRINT_ER("Failed to start Firmware\n");
@@ -1109,7 +1107,9 @@ static int linux_wlan_start_firmware(perInterface_wlan_t* nic){
 
 	/* wait for mac ready */
 	PRINT_D(INIT_DBG,"Waiting for Firmware to get ready ...\n");
-	pm_runtime_get_sync(func->card->host->parent);
+#ifdef WILC_SDIO
+	pm_runtime_get_sync(local_sdio_func->card->host->parent);
+#endif
 	if( (ret = linux_wlan_lock_timeout(&g_linux_wlan->sync_event,5000)) )
 	{
 #ifdef COMPLEMENT_BOOT

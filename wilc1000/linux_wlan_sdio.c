@@ -148,7 +148,7 @@ static void linux_sdio_remove(struct sdio_func *func)
 }
 #if defined(HAS_SUSPEND_RESUME)&& defined(WILC_OPTIMIZE_SLEEP_INT)
 int sdio_init(wilc_wlan_inp_t *inp, wilc_debug_func func);
-int sdio_reset(void *pv);
+int wilc_sdio_reset(void *pv);
 void chip_sleep_manually(WILC_Uint32 u32SleepTime);
 void chip_wakeup(void);
 void host_wakeup_notify(void);
@@ -170,7 +170,7 @@ static int wilc_sdio_suspend(struct device *dev)
 		chip_allow_sleep();
 	}
 	/*reset SDIO to allow kerenl reintilaization at wake up*/
-	sdio_reset(NULL);
+	wilc_sdio_reset(NULL);
 	/*claim the host to prevent driver SDIO access before resume is called*/
 	sdio_claim_host(local_sdio_func);
 	return 0 ;

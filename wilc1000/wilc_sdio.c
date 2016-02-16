@@ -602,7 +602,7 @@ static int sdio_deinit(void *pv)
 }
 
 
-int sdio_reset(void *pv)
+int wilc_sdio_reset(void *pv)
 {
 
     sdio_cmd52_t cmd;

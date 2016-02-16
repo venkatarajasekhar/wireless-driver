@@ -1100,6 +1100,7 @@ static int linux_wlan_start_firmware(perInterface_wlan_t* nic){
 	
 	/* start firmware */
 	PRINT_D(INIT_DBG,"Starting Firmware ...\n");
+	func = dev_to_sdio_func(wilc->dev);
 	ret = g_linux_wlan->oup.wlan_start();
 	if(ret < 0){
 		PRINT_ER("Failed to start Firmware\n");

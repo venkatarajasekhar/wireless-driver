@@ -31,6 +31,12 @@
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
 
+#include <linux/pm_runtime.h>
+#include <linux/mmc/host.h>
+#include <linux/mmc/card.h>
+#include <linux/mmc/sdio.h>
+#include <linux/mmc/sdio_func.h>
+
 #include <linux/version.h>
 #include <linux/semaphore.h>
 
@@ -1090,6 +1096,8 @@ static int linux_wlan_start_firmware(perInterface_wlan_t* nic){
 
 	static int timeout = 5;
 	int ret = 0;
+	struct sdio_func *func;
+	
 	/* start firmware */
 	PRINT_D(INIT_DBG,"Starting Firmware ...\n");
 	ret = g_linux_wlan->oup.wlan_start();
@@ -1100,6 +1108,7 @@ static int linux_wlan_start_firmware(perInterface_wlan_t* nic){
 
 	/* wait for mac ready */
 	PRINT_D(INIT_DBG,"Waiting for Firmware to get ready ...\n");
+	pm_runtime_get_sync(func->card->host->parent);
 	if( (ret = linux_wlan_lock_timeout(&g_linux_wlan->sync_event,5000)) )
 	{
 #ifdef COMPLEMENT_BOOT

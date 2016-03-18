@@ -1369,8 +1369,10 @@ void host_int_freeJoinParams(void* pJoinParams);
 WILC_Sint32 host_int_get_statistics(WILC_WFIDrvHandle hWFIDrv, tstrStatistics* pstrStatistics);
 extern int linux_wlan_get_num_conn_ifcs(void);
 WILC_Sint32 host_int_set_tx_power(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 tx_power);
-
 WILC_Sint32 host_int_get_tx_power(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8* tx_power);
+
+/*0 select antenna 1 , 2 select antenna mode , 2 allow the firmware to choose the best antenna*/
+WILC_Sint32 host_int_set_antenna(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 antenna_mode);
 /*****************************************************************************/
 /*																			 */
 /*									EOF										 */

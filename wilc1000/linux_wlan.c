@@ -31,6 +31,12 @@
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
 
+#include <linux/pm_runtime.h>
+#include <linux/mmc/host.h>
+#include <linux/mmc/card.h>
+#include <linux/mmc/sdio.h>
+#include <linux/mmc/sdio_func.h>
+
 #include <linux/version.h>
 #include <linux/semaphore.h>
 
@@ -1100,6 +1106,9 @@ static int linux_wlan_start_firmware(perInterface_wlan_t* nic){
 
 	/* wait for mac ready */
 	PRINT_D(INIT_DBG,"Waiting for Firmware to get ready ...\n");
+#ifdef WILC_SDIO
+	pm_runtime_get_sync(local_sdio_func->card->host->parent);
+#endif
 	if( (ret = linux_wlan_lock_timeout(&g_linux_wlan->sync_event,5000)) )
 	{
 #ifdef COMPLEMENT_BOOT
@@ -2205,6 +2214,10 @@ int mac_open(struct net_device *ndev){
            						nic->g_struct_frame_reg[0].frame_type,nic->g_struct_frame_reg[0].reg);
    	WILC_WFI_frame_register(nic->wilc_netdev->ieee80211_ptr->wiphy,nic->wilc_netdev,
            						nic->g_struct_frame_reg[1].frame_type,nic->g_struct_frame_reg[1].reg);
+	/*the following call is optional and could be removed if it would call from another function*/
+#if defined(HAS_DUAL_IP_ANTENNA_DEV_MODULE) || defined(HAS_SINGLE_IP_ANTENNA_DEV_MODULE)
+	host_int_set_antenna(priv->hWILCWFIDrv,2);
+#endif		
    	netif_wake_queue(ndev); 
  	g_linux_wlan->open_ifcs++;
 	nic->mac_opened=1;

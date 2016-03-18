@@ -60,6 +60,7 @@ extern WILC_Uint8 g_wilc_initialized;
 
 #define HOST_IF_MSG_SET_TX_POWER	((WILC_Uint16)38)
 #define HOST_IF_MSG_GET_TX_POWER	((WILC_Uint16)39)
+#define HOST_IF_MSG_SET_ANTENNA_MODE				((WILC_Uint16)40)
 #define HOST_IF_MSG_EXIT					((WILC_Uint16)100)
 
 #define HOST_IF_SCAN_TIMEOUT		4000
@@ -4778,6 +4779,27 @@ static WILC_Sint32 Handle_GetTxPwr(void * drvHandler, WILC_Uint8* pu8TxPwr)
 	WILC_SemaphoreRelease(&hWaitResponse, NULL);
 	return s32Error; 
 }
+
+static WILC_Sint32 Handle_SetAntennaMode(void * drvHandler, WILC_Uint8 u8AntennaMode)
+{
+	WILC_Sint32 s32Error = WILC_SUCCESS;
+	tstrWID strWID;
+	tstrWILC_WFIDrv * pstrWFIDrv = (tstrWILC_WFIDrv *)drvHandler;
+	
+	strWID.u16WIDid 	= WID_ANTENNA_SELECTION;
+	strWID.enuWIDtype	= WID_CHAR;
+	strWID.s32ValueSize = sizeof(WILC_Char);
+	strWID.ps8WidVal 	= (WILC_Sint8*)(&u8AntennaMode);
+	printk("set antenna %d\n",u8AntennaMode);
+	s32Error = SendConfigPkt(SET_CFG, &strWID, 1, WILC_TRUE,(WILC_Uint32)pstrWFIDrv);
+		
+	if(s32Error)
+	{
+		PRINT_ER("Failed to send scan paramters config packet\n"); 
+	} 
+	return s32Error; 
+}
+
 /**
 *  @brief hostIFthread
 *  @details 	    Main thread to handle message queue requests 
@@ -5077,6 +5099,13 @@ static void hostIFthread(void* pvArg)
 				Handle_GetTxPwr(strHostIFmsg.drvHandler,&strHostIFmsg.uniHostIFmsgBody.strHostIFTxPwr.u8TxPwr);
 				break;
 			}
+
+			case HOST_IF_MSG_SET_ANTENNA_MODE:
+			{
+				Handle_SetAntennaMode(strHostIFmsg.drvHandler,(WILC_Char)strHostIFmsg.uniHostIFmsgBody.pUserData);
+				break;				
+			}			
+
 			default:
 			{
 				PRINT_ER("[Host Interface] undefined Received Msg ID  \n");
@@ -8793,21 +8822,42 @@ WILC_Sint32 host_int_get_tx_power(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 *tx_powe
 	WILC_Sint32 s32Error = WILC_SUCCESS;	
 	tstrHostIFmsg strHostIFmsg;
 
-	
 	/* prepare the Get RSSI Message */
 	WILC_memset(&strHostIFmsg, 0, sizeof(tstrHostIFmsg));
 
 	strHostIFmsg.u16MsgId = HOST_IF_MSG_GET_TX_POWER;
 	strHostIFmsg.drvHandler=hWFIDrv;
 	/* send the message */
-	s32Error = 	WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
+	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error){
 		PRINT_ER("Failed to send get host channel param's message queue ");
 		return WILC_FAIL;
-		}
+	}
 
 	WILC_SemaphoreAcquire(&hWaitResponse, NULL);	
 
 	*tx_power = strHostIFmsg.uniHostIFmsgBody.strHostIFTxPwr.u8TxPwr;
+
+	return s32Error;
+}
+
+WILC_Sint32 host_int_set_antenna(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 antenna_mode)
+{
+	WILC_Sint32 s32Error = WILC_SUCCESS;	
+	tstrHostIFmsg strHostIFmsg;
+
+	
+	/* prepare the Get RSSI Message */
+	WILC_memset(&strHostIFmsg, 0, sizeof(tstrHostIFmsg));
+
+	strHostIFmsg.u16MsgId 	= HOST_IF_MSG_SET_ANTENNA_MODE;
+	strHostIFmsg.uniHostIFmsgBody.pUserData = (WILC_Char*)antenna_mode;
+	strHostIFmsg.drvHandler	= hWFIDrv;
+	/* send the message */
+	s32Error = 	WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
+	if(s32Error){
+		PRINT_ER("Failed to send get host channel param's message queue ");
+		return WILC_FAIL;
+	}	
 	return s32Error;
 }

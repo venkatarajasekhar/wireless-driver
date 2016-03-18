@@ -745,9 +745,13 @@ static void CfgConnectResult(tenuConnDisconnEvent enuConnDisconnEvent,
 		{
 			pstrDisconnectNotifInfo->u16reason=1;
 		}
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
+		cfg80211_disconnected(dev, pstrDisconnectNotifInfo->u16reason, pstrDisconnectNotifInfo->ie,
+						      pstrDisconnectNotifInfo->ie_len, false, GFP_KERNEL);
+#else
 		cfg80211_disconnected(dev, pstrDisconnectNotifInfo->u16reason, pstrDisconnectNotifInfo->ie,
 						      pstrDisconnectNotifInfo->ie_len, GFP_KERNEL);
-
+#endif
 	}
 
 }
@@ -4148,6 +4152,10 @@ int WILC_WFI_get_tx_power(struct wiphy *wiphy,
 	WILC_Sint32 s32Error = WILC_SUCCESS;
 	struct WILC_WFI_priv* priv = wiphy_priv(wiphy);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0)
+	if(!g_linux_wlan->wilc1000_initialized)
+		return WILC_FAIL;
+#endif
 	s32Error = host_int_get_tx_power(priv->hWILCWFIDrv, (WILC_Uint8*)(dbm));
 	PRINT_D(CFG80211_DBG, "Got tx power %d\n", *dbm);
 

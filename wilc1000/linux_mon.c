@@ -246,11 +246,11 @@ static int mon_mgmt_tx(struct net_device *dev, const u8 *buf, size_t len)
 	linux_wlan_t* nic;
 	struct tx_complete_mon_data *mgmt_tx =NULL;
 
-	 	if(dev == NULL)
-		{
-			PRINT_D(HOSTAPD_DBG,"ERROR: dev == NULL\n");
-			return WILC_FAIL;
-		}
+ 	if(dev == NULL)
+	{
+		PRINT_D(HOSTAPD_DBG,"ERROR: dev == NULL\n");
+		return WILC_FAIL;
+	}
 	nic =netdev_priv(dev);
 	
 	netif_stop_queue(dev);	

@@ -1172,10 +1172,10 @@ static int spi_init(wilc_wlan_inp_t *inp, wilc_debug_func func)
 		/* Read failed. Try with CRC off. This might happen when module 
 		is removed but chip isn't reset*/
 		g_spi.crc_off = 1;
-		PRINT_ER("[wilc spi]: Failed internal read protocol with CRC on, retyring with CRC off...\n", __LINE__);
+		PRINT_ER("[wilc spi]: Failed internal read protocol with CRC on, retyring with CRC off...\n");
 		if (!spi_internal_read(WILC_SPI_PROTOCOL_OFFSET, &reg)){
 			// Reaad failed with both CRC on and off, something went bad
-			PRINT_ER("[wilc spi]: Failed internal read protocol...\n", __LINE__);
+			PRINT_ER("[wilc spi]: Failed internal read protocol...\n");
 			return 0;
 		}
 	}
@@ -1185,7 +1185,7 @@ static int spi_init(wilc_wlan_inp_t *inp, wilc_debug_func func)
 		reg &= ~0x70;
 		reg |= (0x5 << 4);
 		if (!spi_internal_write(WILC_SPI_PROTOCOL_OFFSET, reg)) {
-			PRINT_ER("[wilc spi %d]: Failed internal write protocol reg...\n", __LINE__);
+			PRINT_ER("[wilc spi]: Failed internal write protocol reg...\n");
 			return 0;
 		}
 		g_spi.crc_off = 1;

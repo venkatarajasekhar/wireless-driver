@@ -139,7 +139,7 @@ int linux_spi_write(uint8_t* b, uint32_t len){
 		ret = -1;
 	}
 
-	/* change return value to match WILC interface */
+	/* change return value to match wilc interface */
 	(ret<0)? (ret = 0):(ret = 1);
 
 

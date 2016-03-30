@@ -52,13 +52,6 @@
 
 #include "svnrevision.h"
 
-#ifdef STATIC_MACADDRESS//brandy_0724 [[
-#include <linux/vmalloc.h>
-#include <linux/fs.h>
-struct task_struct* wilc_mac_thread;
-unsigned char mac_add[] = {0x00, 0x80, 0xC2, 0x5E, 0xa2, 0xb2};
-#endif //brandy_0724 ]]
-
 #if defined(CUSTOMER_PLATFORM)
 /*
  TODO : Write power control functions as customer platform.
@@ -131,7 +124,6 @@ static struct notifier_block g_dev_notifier = {
 
 
 #ifndef STA_FIRMWARE
-#define STA_FIRMWARE_1002	"WILC1002_firmware.bin"
 #define STA_FIRMWARE_1003	"WILC1003_firmware.bin"
 #endif
 
@@ -352,7 +344,7 @@ static int dev_state_ev_handler(struct notifier_block *this, unsigned long event
 		
 		
 
-			if(bEnablePS	== WILC_TRUE)
+			if(bEnablePS == WILC_TRUE)
 				host_int_set_power_mgmt((WILC_WFIDrvHandle)pstrWFIDrv, 1, 0);
 
             PRINT_D(GENERIC_DBG, "[%s] Up IP\n", dev_iface->ifa_label);
@@ -959,9 +951,9 @@ static int linux_wlan_txq_task(void* vp)
 #if defined USE_TX_BACKOFF_DELAY_IF_NO_BUFFERS
 #define TX_BACKOFF_WEIGHT_INCR_STEP (1)
 #define TX_BACKOFF_WEIGHT_DECR_STEP (1) 
-#define TX_BACKOFF_WEIGHT_MAX (7)
+#define TX_BACKOFF_WEIGHT_MAX (0)
 #define TX_BACKOFF_WEIGHT_MIN (0)
-#define TX_BACKOFF_WEIGHT_UNIT_MS (10)
+#define TX_BACKOFF_WEIGHT_UNIT_MS (1)
 	int backoff_weight = TX_BACKOFF_WEIGHT_MIN;
 	signed long timeout;
 #endif
@@ -1006,9 +998,14 @@ static int linux_wlan_txq_task(void* vp)
 				do {
 					/* Back off from sending packets for some time. */
 					/* schedule_timeout will allow RX task to run and free buffers.*/					
-					//set_current_state(TASK_UNINTERRUPTIBLE);
-					//timeout = schedule_timeout(timeout); 
+					/*TicketId_818*/
+					/*Setting state to TASK_INTERRUPTIBLE will put the thread back to CPU*/
+					/*running queue when it's signaled even if 'timeout' isn't elapsed.*/
+					/*This gives faster chance for reserved SK buffers to be freed*/
+					set_current_state(TASK_INTERRUPTIBLE);
+					timeout = schedule_timeout(timeout); 
 					//msleep(TX_BACKOFF_WEIGHT_UNIT_MS << backoff_weight);
+					//msleep(1);
 				} while(/*timeout*/0);
 				backoff_weight += TX_BACKOFF_WEIGHT_INCR_STEP;
 				if(backoff_weight > TX_BACKOFF_WEIGHT_MAX) {
@@ -1044,8 +1041,10 @@ int linux_wlan_get_firmware(perInterface_wlan_t* p_nic){
 	
 
 	chipId = wilc_get_chipid(0);
-	if(chipId < 0x1003a0)
-		firmware = STA_FIRMWARE_1002;
+	if(chipId < 0x1003a0){
+		PRINT_ER("WILC1002 isn't suported\n!");
+		goto _fail_;
+	}
 	else
 		firmware = STA_FIRMWARE_1003;
 
@@ -1172,9 +1171,6 @@ _FAIL_:
 static int linux_wlan_init_test_config(struct net_device *dev, linux_wlan_t* p_nic){
 
 	unsigned char c_val[64];
-	#ifndef STATIC_MACADDRESS
-	unsigned char mac_add[] = {0x00, 0x80, 0xC2, 0x5E, 0xa2, 0xb2};
-	#endif
 	unsigned int chipid = 0;
 
 	/*BugID_5077*/
@@ -1183,20 +1179,18 @@ static int linux_wlan_init_test_config(struct net_device *dev, linux_wlan_t* p_n
 	
 	PRINT_D(TX_DBG,"Start configuring Firmware\n");
 
+	//get_random_bytes(&mac_add[5], 1);
+
 	priv = wiphy_priv(dev->ieee80211_ptr->wiphy);
 	pstrWFIDrv = (tstrWILC_WFIDrv *)priv->hWILCWFIDrv;
 	PRINT_D(INIT_DBG, "Host = %x\n",(WILC_Uint32)pstrWFIDrv);
 
-	#ifndef STATIC_MACADDRESS
-	host_int_get_MacAddress(priv->hWILCWFIDrv, mac_add);
-	#endif
-	PRINT_D(INIT_DBG,"MAC address is : %pM\n", mac_add);
 	chipid = wilc_get_chipid(0);
 
 	
 	if(g_linux_wlan->oup.wlan_cfg_set == NULL)
 	{
-		PRINT_D(INIT_DBG,"Null p[ointer\n");
+		PRINT_D(INIT_DBG,"Null pointer\n");
 		goto _fail_;
 	}
 
@@ -1411,11 +1405,6 @@ static int linux_wlan_init_test_config(struct net_device *dev, linux_wlan_t* p_n
 	if (!g_linux_wlan->oup.wlan_cfg_set(0, WID_11N_TXOP_PROT_DISABLE, c_val, 1, 0,0))
 		goto _fail_;	
 
-	memcpy(c_val, mac_add, 6);
-
-	if (!g_linux_wlan->oup.wlan_cfg_set(0, WID_MAC_ADDR, c_val, 6, 0,0))
-		goto _fail_;
-	
 	/**
 		AP only
 	**/
@@ -1791,68 +1780,6 @@ static void wlan_deinitialize_threads(linux_wlan_t* nic){
 	#endif
 }
 
-#ifdef STATIC_MACADDRESS
-const char *path_string[] = {
-	"/etc/wlan",
-	"/data/wlan",
-};
-
-static int linux_wlan_read_mac_addr(void* vp)
-{
-	int ret = 0;
-	struct file *fp = (struct file *)-ENOENT;
-	mm_segment_t old_fs;
-	loff_t pos = 0;
-	int index;
-	int array_size = sizeof(path_string)/sizeof(path_string[0]);
-
-	/* change to KERNEL_DS address limit */
-	old_fs = get_fs();
-	set_fs(KERNEL_DS);
-
-	for (index = 0 ; index < array_size ; index++ ) {
-		fp = filp_open(path_string[index], O_WRONLY, 0640);
-		if (!fp) {
-			ret = -1;
-			goto exit;
-		}
-
-		/*No such file or directory */
-		if (IS_ERR(fp) || !fp->f_op) {
-			get_random_bytes(&mac_add[3], 3);
-			/* open file to write */
-			fp = filp_open(path_string[index], O_WRONLY|O_CREAT, 0640);
-			
-			if (!fp || IS_ERR(fp)) {
-				ret = -1;
-				continue;
-			} else {
-				/* write buf to file */
-				fp->f_op->write(fp, mac_add, 6, &pos);
-				break;
-			}
-		} else {
-			/* read file to buf */
-			fp->f_op->read(fp, mac_add, 6, &pos);
-			break;
-		}
-	}
-	
-	if (index == array_size) {
-		PRINT_ER("random MAC\n");
-	}
-
-exit:	
-	  if (fp && !IS_ERR(fp)) {
-		filp_close(fp,NULL);
-	 }
-	  
-    set_fs(old_fs);
-
-    return  ret;
-}
-#endif
-
 #ifdef COMPLEMENT_BOOT
 
 extern volatile int probe;
@@ -1964,14 +1891,7 @@ int wilc1000_wlan_init(struct net_device *dev,perInterface_wlan_t* p_nic)
 		g_linux_wlan->wilc1000_initialized = 0;
 
 		wlan_init_locks(g_linux_wlan);
-
-#ifdef STATIC_MACADDRESS
-		wilc_mac_thread = kthread_run(linux_wlan_read_mac_addr,NULL,"wilc_mac_thread");
-		if(wilc_mac_thread < 0){
-			PRINT_ER("couldn't create Mac addr thread\n");
-		}
-#endif
- 
+		
 		linux_to_wlan(&nwi,g_linux_wlan);
 
 		ret = wilc_wlan_init(&nwi, &nwo);
@@ -2216,7 +2136,7 @@ int mac_open(struct net_device *ndev){
            						nic->g_struct_frame_reg[1].frame_type,nic->g_struct_frame_reg[1].reg);
 	/*the following call is optional and could be removed if it would call from another function*/
 #if defined(HAS_DUAL_IP_ANTENNA_DEV_MODULE) || defined(HAS_SINGLE_IP_ANTENNA_DEV_MODULE)
-	host_int_set_antenna(priv->hWILCWFIDrv,2);
+	host_int_set_antenna(priv->hWILCWFIDrv,DIVERSITY);
 #endif		
    	netif_wake_queue(ndev); 
  	g_linux_wlan->open_ifcs++;
@@ -2386,7 +2306,7 @@ int mac_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	perInterface_wlan_t* nic;
 	struct tx_complete_data* tx_data = NULL;
-	int QueueCount;
+	int QueueCount = 0;
 	char *pu8UdpBuffer;
 	struct iphdr *ih;
 	struct ethhdr * eth_h;
@@ -2755,7 +2675,7 @@ void frmw_to_linux(uint8_t *buff, uint32_t size,uint32_t pkt_offset){
 			pu8UdpBuffer = (char*)ih + sizeof(struct iphdr);
 			if(buff_to_send[35] == 67 && buff_to_send[37] == 68)
 			{
-				PRINT_D(RX_DBG,"DHCP Message received\n");
+				PRINT_D(RX_DBG,"DHCP Message received %x ,%x ,%x\n",buff_to_send[282],buff_to_send[283],buff_to_send[284]);
 			}
 			if(buff_to_send[12]==0x88&&buff_to_send[13]==0x8e)
 				PRINT_D(GENERIC_DBG,"eapol received\n");

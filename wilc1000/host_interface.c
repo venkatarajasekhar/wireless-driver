@@ -19,12 +19,12 @@ extern WILC_Uint8 g_wilc_initialized;
 /*****************************************************************************/ 
 
 /* Message types of the Host IF Message Queue*/
-#define HOST_IF_MSG_SCAN					((WILC_Uint16)0)
-#define HOST_IF_MSG_CONNECT					((WILC_Uint16)1)
-#define HOST_IF_MSG_RCVD_GNRL_ASYNC_INFO	((WILC_Uint16)2)				
-#define HOST_IF_MSG_KEY						((WILC_Uint16)3)
+#define HOST_IF_MSG_SCAN				((WILC_Uint16)0)
+#define HOST_IF_MSG_CONNECT				((WILC_Uint16)1)
+#define HOST_IF_MSG_RCVD_GNRL_ASYNC_INFO		((WILC_Uint16)2)				
+#define HOST_IF_MSG_KEY					((WILC_Uint16)3)
 #define HOST_IF_MSG_RCVD_NTWRK_INFO			((WILC_Uint16)4)
-#define HOST_IF_MSG_RCVD_SCAN_COMPLETE		((WILC_Uint16)5)
+#define HOST_IF_MSG_RCVD_SCAN_COMPLETE			((WILC_Uint16)5)
 #define HOST_IF_MSG_CFG_PARAMS				((WILC_Uint16)6)
 #define HOST_IF_MSG_SET_CHANNEL				((WILC_Uint16)7)
 #define HOST_IF_MSG_DISCONNECT				((WILC_Uint16)8)
@@ -36,32 +36,32 @@ extern WILC_Uint8 g_wilc_initialized;
 #define HOST_IF_MSG_DEL_STATION				((WILC_Uint16)14)
 #define HOST_IF_MSG_EDIT_STATION			((WILC_Uint16)15)
 #define HOST_IF_MSG_SCAN_TIMER_FIRED			((WILC_Uint16)16)
-#define HOST_IF_MSG_CONNECT_TIMER_FIRED		((WILC_Uint16)17)
+#define HOST_IF_MSG_CONNECT_TIMER_FIRED			((WILC_Uint16)17)
 #define HOST_IF_MSG_POWER_MGMT				((WILC_Uint16)18)
 #define HOST_IF_MSG_GET_INACTIVETIME			((WILC_Uint16)19)
 #define HOST_IF_MSG_REMAIN_ON_CHAN			((WILC_Uint16)20)
 #define  HOST_IF_MSG_REGISTER_FRAME  			((WILC_Uint16)21)
-#define HOST_IF_MSG_LISTEN_TIMER_FIRED     ((WILC_Uint16)22)
-#define HOST_IF_MSG_GET_LINKSPEED				((WILC_Uint16)23)
-#define HOST_IF_MSG_SET_WFIDRV_HANDLER		((WILC_Uint16)24)
-#define HOST_IF_MSG_SET_MAC_ADDRESS		((WILC_Uint16)25)
-#define HOST_IF_MSG_GET_MAC_ADDRESS		((WILC_Uint16)26)
-#define HOST_IF_MSG_SET_OPERATION_MODE		((WILC_Uint16)27)
+#define HOST_IF_MSG_LISTEN_TIMER_FIRED			((WILC_Uint16)22)
+#define HOST_IF_MSG_GET_LINKSPEED			((WILC_Uint16)23)
+#define HOST_IF_MSG_SET_WFIDRV_HANDLER			((WILC_Uint16)24)
+#define HOST_IF_MSG_SET_MAC_ADDRESS			((WILC_Uint16)25)
+#define HOST_IF_MSG_GET_MAC_ADDRESS			((WILC_Uint16)26)
+#define HOST_IF_MSG_SET_OPERATION_MODE			((WILC_Uint16)27)
 #define HOST_IF_MSG_SET_IPADDRESS			((WILC_Uint16)28)
 #define HOST_IF_MSG_GET_IPADDRESS			((WILC_Uint16)29)
 #define HOST_IF_MSG_FLUSH_CONNECT			((WILC_Uint16)30)
-#define HOST_IF_MSG_GET_STATISTICS				((WILC_Uint16)31)
+#define HOST_IF_MSG_GET_STATISTICS			((WILC_Uint16)31)
 #define HOST_IF_MSG_SET_MULTICAST_FILTER		((WILC_Uint16)32)
-#define HOST_IF_MSG_ADD_BA_SESSION		((WILC_Uint16)33)
-#define HOST_IF_MSG_DEL_BA_SESSION		((WILC_Uint16)34)
-#define HOST_IF_MSG_Q_IDLE		((WILC_Uint16)35)
-#define HOST_IF_MSG_DEL_ALL_STA  ((WILC_Uint16)36)
+#define HOST_IF_MSG_ADD_BA_SESSION			((WILC_Uint16)33)
+#define HOST_IF_MSG_DEL_BA_SESSION			((WILC_Uint16)34)
+#define HOST_IF_MSG_Q_IDLE				((WILC_Uint16)35)
+#define HOST_IF_MSG_DEL_ALL_STA				((WILC_Uint16)36)
 #define HOST_IF_MSG_DEL_ALL_RX_BA_SESSIONS		((WILC_Uint16)37)
 
-#define HOST_IF_MSG_SET_TX_POWER	((WILC_Uint16)38)
-#define HOST_IF_MSG_GET_TX_POWER	((WILC_Uint16)39)
-#define HOST_IF_MSG_SET_ANTENNA_MODE				((WILC_Uint16)40)
-#define HOST_IF_MSG_EXIT					((WILC_Uint16)100)
+#define HOST_IF_MSG_SET_TX_POWER			((WILC_Uint16)38)
+#define HOST_IF_MSG_GET_TX_POWER			((WILC_Uint16)39)
+#define HOST_IF_MSG_SET_ANTENNA_MODE			((WILC_Uint16)40)
+#define HOST_IF_MSG_EXIT				((WILC_Uint16)100)
 
 #define HOST_IF_SCAN_TIMEOUT		4000
 #define HOST_IF_CONNECT_TIMEOUT	9500
@@ -439,6 +439,11 @@ typedef struct
 {
 	WILC_Uint8 u8TxPwr;
 }tstrHostIFTxPwr;
+typedef struct 
+{
+	WILC_Uint8* u8TxPwr;
+}tstrHostIFGetTxPwr;
+
 /**/
 /*!
 *  @union 		tuniHostIFmsgBody
@@ -452,37 +457,38 @@ typedef struct
 */
 typedef union _tuniHostIFmsgBody
 {
-	tstrHostIFscanAttr		strHostIFscanAttr;		/*!< Host IF Scan Request Attributes message body */
-	tstrHostIFconnectAttr	strHostIFconnectAttr;	/*!< Host IF Connect Request Attributes message body */
-	tstrRcvdNetworkInfo 	strRcvdNetworkInfo;		/*!< Received Asynchronous Network Info message body */
-	tstrRcvdGnrlAsyncInfo	strRcvdGnrlAsyncInfo;	/*!< Received General Asynchronous Info message body */
-	tstrHostIFkeyAttr		strHostIFkeyAttr;		/*!<>*/
-	tstrHostIFCfgParamAttr		strHostIFCfgParamAttr;   /*! <CFG Parameter message Body> */
-	tstrHostIFSetChan		strHostIFSetChan;
-	tstrHostIFGetChan		strHostIFGetChan;
-	tstrHostIFSetBeacon	strHostIFSetBeacon;		/*!< Set beacon message body */
-	tstrHostIFDelBeacon	strHostIFDelBeacon;		/*!< Del beacon message body */
-	tstrWILC_AddStaParam	strAddStaParam;			/*!< Add station message body */
-	tstrHostIFDelSta		strDelStaParam;			/*!< Del Station message body */
-	tstrWILC_AddStaParam	strEditStaParam;			/*!< Edit station message body */
-	//tstrScanComplete		strScanComplete;		/*Received Async. Scan Complete message body*/
-	tstrTimerCb			strTimerCb;				/*!< Timer callback message body */
-	tstrHostIfPowerMgmtParam strPowerMgmtparam; 	/*!< Power Management message body */
-	tstrHostIfStaInactiveT  strHostIfStaInactiveT;
-	tstrHostIFSetIPAddr	strHostIfSetIP;
-	tstrHostIfSetDrvHandler	  strHostIfSetDrvHandler;
-	tstrHostIFSetMulti		strHostIfSetMulti;
-	tstrHostIfSetOperationMode strHostIfSetOperationMode;
-	tstrHostIfSetMacAddress strHostIfSetMacAddress;
-	tstrHostIfGetMacAddress strHostIfGetMacAddress;
-	tstrHostIfBASessionInfo strHostIfBASessionInfo;
-	#ifdef WILC_P2P
-	tstrHostIfRemainOnChan strHostIfRemainOnChan;
-	tstrHostIfRegisterFrame strHostIfRegisterFrame;
-	#endif
+	tstrHostIFscanAttr			strHostIFscanAttr;		/*!< Host IF Scan Request Attributes message body */
+	tstrHostIFconnectAttr			strHostIFconnectAttr;	/*!< Host IF Connect Request Attributes message body */
+	tstrRcvdNetworkInfo		 	strRcvdNetworkInfo;		/*!< Received Asynchronous Network Info message body */
+	tstrRcvdGnrlAsyncInfo			strRcvdGnrlAsyncInfo;	/*!< Received General Asynchronous Info message body */
+	tstrHostIFkeyAttr			strHostIFkeyAttr;		/*!<>*/
+	tstrHostIFCfgParamAttr			strHostIFCfgParamAttr;   /*! <CFG Parameter message Body> */
+	tstrHostIFSetChan			strHostIFSetChan;
+	tstrHostIFGetChan			strHostIFGetChan;
+	tstrHostIFSetBeacon			strHostIFSetBeacon;		/*!< Set beacon message body */
+	tstrHostIFDelBeacon			strHostIFDelBeacon;		/*!< Del beacon message body */
+	tstrWILC_AddStaParam			strAddStaParam;			/*!< Add station message body */
+	tstrHostIFDelSta			strDelStaParam;			/*!< Del Station message body */
+	tstrWILC_AddStaParam			strEditStaParam;			/*!< Edit station message body */
+	//tstrScanComplete			strScanComplete;		/*Received Async. Scan Complete message body*/
+	tstrTimerCb				strTimerCb;				/*!< Timer callback message body */
+	tstrHostIfPowerMgmtParam		strPowerMgmtparam; 	/*!< Power Management message body */
+	tstrHostIfStaInactiveT			strHostIfStaInactiveT;
+	tstrHostIFSetIPAddr			strHostIfSetIP;
+	tstrHostIfSetDrvHandler			strHostIfSetDrvHandler;
+	tstrHostIFSetMulti			strHostIfSetMulti;
+	tstrHostIfSetOperationMode		strHostIfSetOperationMode;
+	tstrHostIfSetMacAddress			strHostIfSetMacAddress;
+	tstrHostIfGetMacAddress			strHostIfGetMacAddress;
+	tstrHostIfBASessionInfo			strHostIfBASessionInfo;
+#ifdef WILC_P2P
+	tstrHostIfRemainOnChan			strHostIfRemainOnChan;
+	tstrHostIfRegisterFrame			strHostIfRegisterFrame;
+#endif
 	WILC_Char * 				pUserData;
-	tstrHostIFDelAllSta       strHostIFDelAllSta;	
-	tstrHostIFTxPwr strHostIFTxPwr;
+	tstrHostIFDelAllSta			strHostIFDelAllSta;	
+	tstrHostIFTxPwr				strHostIFTxPwr;
+	tstrHostIFGetTxPwr 			strHostIFGetTxPwr;
 } tuniHostIFmsgBody;
 
 /*!
@@ -2803,7 +2809,7 @@ static WILC_Sint32 Handle_RcvdGnrlAsyncInfo(void * drvHandler,tstrRcvdGnrlAsyncI
 				
 				#endif
 				
-				//host_int_addBASession(pstrWFIDrv->strWILC_UsrConnReq.pu8bssid,0,
+				//host_int_addBASession((WILC_WFIDrvHandle)pstrWFIDrv, pstrWFIDrv->strWILC_UsrConnReq.pu8bssid,0,
 					//BA_SESSION_DEFAULT_BUFFER_SIZE,BA_SESSION_DEFAULT_TIMEOUT);
 			}
 			else
@@ -3703,12 +3709,12 @@ WILC_Sint32 Handle_GetStatistics(void * drvHandler,tstrStatistics* pstrStatistic
 	#ifdef TCP_ENHANCEMENTS
 	if((pstrStatistics->u8LinkSpeed > TCP_ACK_FILTER_LINK_SPEED_THRESH) && (pstrStatistics->u8LinkSpeed != DEFAULT_LINK_SPEED))
 	{
-		//printk("Enable TCP filter\n");
+		// printk("Enable TCP filter\n");
 		Enable_TCP_ACK_Filter(WILC_TRUE);
 	}
 	else if( pstrStatistics->u8LinkSpeed != DEFAULT_LINK_SPEED)
 	{
-		//printk("Disable TCP filter %d\n",pstrStatistics->u8LinkSpeed);
+		// printk("Disable TCP filter %d\n",pstrStatistics->u8LinkSpeed);
 		Enable_TCP_ACK_Filter(WILC_FALSE);
 	}
 	#endif
@@ -4550,6 +4556,7 @@ static WILC_Sint32 Handle_AddBASession(void * drvHandler, tstrHostIfBASessionInf
 	strWID.ps8WidVal = (WILC_Uint8*)WILC_MALLOC(BLOCK_ACK_REQ_SIZE);
 	strWID.s32ValueSize = BLOCK_ACK_REQ_SIZE;
 	ptr = strWID.ps8WidVal;
+	WILC_memset(ptr, 0, strWID.s32ValueSize);
 	//*ptr++ = 0x14;
 	*ptr++ = 0x14;
 	*ptr++ = 0x3;
@@ -4582,6 +4589,7 @@ static WILC_Sint32 Handle_AddBASession(void * drvHandler, tstrHostIfBASessionInf
 	strWID.enuWIDtype = WID_STR;
 	strWID.s32ValueSize = 15;
 	ptr = strWID.ps8WidVal;
+	WILC_memset(ptr, 0, strWID.s32ValueSize);
 	//*ptr++ = 0x14;
 	*ptr++ = 15;
 	*ptr++ = 7;
@@ -5096,7 +5104,7 @@ static void hostIFthread(void* pvArg)
 
 			case HOST_IF_MSG_GET_TX_POWER:
 			{
-				Handle_GetTxPwr(strHostIFmsg.drvHandler,&strHostIFmsg.uniHostIFmsgBody.strHostIFTxPwr.u8TxPwr);
+				Handle_GetTxPwr(strHostIFmsg.drvHandler,strHostIFmsg.uniHostIFmsgBody.strHostIFGetTxPwr.u8TxPwr);
 				break;
 			}
 
@@ -5221,8 +5229,9 @@ WILC_Sint32 host_int_remove_wep_key(WILC_WFIDrvHandle hWFIDrv,WILC_Uint8 u8keyId
 	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error)
 		PRINT_ER("Error in sending message queue : Request to remove WEP key \n");
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
-	
+	else
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
+
 	WILC_CATCH(s32Error)
 	{
 
@@ -5271,7 +5280,8 @@ WILC_Sint32 host_int_set_WEPDefaultKeyID(WILC_WFIDrvHandle hWFIDrv,WILC_Uint8 u8
 	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error)
 		PRINT_ER("Error in sending message queue : Default key index\n");
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
+	else
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
 
 	WILC_CATCH(s32Error)
 	{
@@ -5340,7 +5350,8 @@ WILC_Sint32 host_int_add_wep_key_bss_sta(WILC_WFIDrvHandle hWFIDrv, const WILC_U
 	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error)
 		PRINT_ER("Error in sending message queue :WEP Key\n");
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
+	else		
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
 
 	WILC_CATCH(s32Error)
 	{
@@ -5419,7 +5430,8 @@ WILC_Sint32 host_int_add_wep_key_bss_ap(WILC_WFIDrvHandle hWFIDrv, const WILC_Ui
 
 	if(s32Error)
 		PRINT_ER("Error in sending message queue :WEP Key\n");
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
+	else
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
 
 	WILC_CATCH(s32Error)
 	{
@@ -5528,11 +5540,8 @@ WILC_Sint32 host_int_add_ptk(WILC_WFIDrvHandle hWFIDrv,WILC_Uint8* pu8Ptk,WILC_U
 
 	if(s32Error)
 		PRINT_ER("Error in sending message queue:  PTK Key\n");
-
-	////////////////
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
-	//WILC_Sleep(100);
-	/////////	
+	else
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
 
 	WILC_CATCH(s32Error)
 	{
@@ -5640,10 +5649,11 @@ WILC_Sint32 host_int_add_rx_gtk(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8* pu8RxGtk,
 	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error)
 		PRINT_ER("Error in sending message queue:  RX GTK\n");
-	////////////////
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
-	//WILC_Sleep(100);
-	/////////	
+	else
+	{
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestKeyBlock),NULL);
+		//WILC_Sleep(100);
+	}		
 
 	WILC_CATCH(s32Error)
 		{
@@ -5696,18 +5706,17 @@ WILC_Sint32 host_int_add_tx_gtk(WILC_WFIDrvHandle hWFIDrv,WILC_Uint8 u8KeyLen,WI
 
 	/* send the message */
 	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
-	if(s32Error)
+	if(s32Error) {
 		PRINT_ER("Error in sending message queue: TX GTK\n");
-	
-	////////////////
-	WILC_SemaphoreAcquire(&hSemTestKeyBlock,NULL);
-	WILC_Sleep(100);
-	/////////
+	} else {
+		WILC_SemaphoreAcquire(&hSemTestKeyBlock,NULL);
+		WILC_Sleep(100);
+	}	
 
 	WILC_CATCH(s32Error)
-		{
+	{
 
-		}
+	}
 	return s32Error;
 }
 #endif
@@ -6275,9 +6284,8 @@ WILC_Sint32 host_int_disconnect(WILC_WFIDrvHandle hWFIDrv, WILC_Uint16 u16Reason
 	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error)
 		PRINT_ER("Failed to send message queue: disconnect\n");
-	////////////////
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestDisconnectBlock),NULL);	
-	/////////
+	else	
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemTestDisconnectBlock),NULL);	
 	
 	WILC_CATCH(s32Error)
 	{
@@ -6496,14 +6504,15 @@ WILC_Sint32 host_int_wait_msg_queue_idle(void)
 	{
 		WILC_ERRORREPORT(s32Error, s32Error);
 	}
+	
+	// wait untill MSG Q is empty
+	WILC_SemaphoreAcquire(&hWaitResponse, NULL);
+
 	WILC_CATCH(s32Error)
 	{
 	
 	}
-
-	// wait untill MSG Q is empty
-	WILC_SemaphoreAcquire(&hWaitResponse, NULL);
-
+	
 	return s32Error;
 	
 }
@@ -6602,7 +6611,8 @@ WILC_Sint32 host_int_get_host_chnl_num(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8* pu
 	s32Error = 	WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error)
 		PRINT_ER("Failed to send get host channel param's message queue ");
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemGetCHNL), NULL);
+	else
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemGetCHNL), NULL);
 	//gu8Chnl = 11;
 
 	*pu8ChNo = gu8Chnl;
@@ -6699,11 +6709,11 @@ WILC_Sint32 host_int_get_inactive_time(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 * m
 	strHostIFmsg.drvHandler=hWFIDrv;
        
 	/* send the message */
-	s32Error = 	WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
+	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error)
 		PRINT_ER("Failed to send get host channel param's message queue ");
-
-	WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemInactiveTime), NULL);
+	else
+		WILC_SemaphoreAcquire(&(pstrWFIDrv->hSemInactiveTime), NULL);
 	
 	*pu32InactiveTime = gu32InactiveTime;
 
@@ -7523,13 +7533,11 @@ WILC_Sint32 host_int_deinit(WILC_WFIDrvHandle hWFIDrv)
 	
 	
 		s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
-		if(s32Error != WILC_SUCCESS)
-		{
+		if(s32Error != WILC_SUCCESS) {
 			PRINT_ER("Error in sending deinit's message queue message function: Error(%d)\n",s32Error);
+		} else {
+			WILC_SemaphoreAcquire(&hSemHostIFthrdEnd, NULL);
 		}
-
-		WILC_SemaphoreAcquire(&hSemHostIFthrdEnd, NULL);
-
 	
 	
 		WILC_MsgQueueDestroy(&gMsgQHostIF, WILC_NULL);
@@ -7711,14 +7719,12 @@ void host_int_ScanCompleteReceived(WILC_Uint8* pu8Buffer, WILC_Uint32 u32Length)
 	drvHandler=((pu8Buffer[u32Length-4])|(pu8Buffer[u32Length-3]<<8)|(pu8Buffer[u32Length-2]<<16)|(pu8Buffer[u32Length-1]<<24));
 	pstrWFIDrv = (tstrWILC_WFIDrv *)drvHandler;
 
-	
-	PRINT_D(GENERIC_DBG,"Scan notification received %x\n", (WILC_Uint32)pstrWFIDrv);
-
 	if(pstrWFIDrv== NULL||pstrWFIDrv==terminated_handle)
-
 	{
 		return;
 	}
+
+	PRINT_D(GENERIC_DBG,"Scan notification received %x\n", (WILC_Uint32)pstrWFIDrv);
 
 	/*if there is an ongoing scan request*/	
 	if(pstrWFIDrv->strWILC_UsrScanReq.pfUserScanResult)
@@ -8180,19 +8186,19 @@ WILC_Sint32 host_int_del_allstation(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 pu8Mac
 	pstrDelAllStationMsg->u8Num_AssocSta=u8AssocNumb;
 	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	
-
 	if(s32Error)
-
 	{
 		WILC_ERRORREPORT(s32Error, s32Error);
 
 	}
+	
+	WILC_SemaphoreAcquire(&hWaitResponse, NULL);	
+
 	WILC_CATCH(s32Error)	
 	{
 		
 	}
-	WILC_SemaphoreAcquire(&hWaitResponse, NULL);	
-
+	
 	return s32Error;
 
 }
@@ -8254,6 +8260,7 @@ WILC_Sint32 host_int_set_power_mgmt(WILC_WFIDrvHandle hWFIDrv, WILC_Bool bIsEnab
 	tstrWILC_WFIDrv * pstrWFIDrv = (tstrWILC_WFIDrv *)hWFIDrv;
 	tstrHostIFmsg strHostIFmsg;
 	tstrHostIfPowerMgmtParam* pstrPowerMgmtParam = &strHostIFmsg.uniHostIFmsgBody.strPowerMgmtparam;
+	
 	/*if the two interface are connected and it is required to enable PS , neglect the request*/
 	if(linux_wlan_get_num_conn_ifcs() == 2 && bIsEnabled)
 	{
@@ -8648,15 +8655,16 @@ WILC_Sint32 host_int_delBASession(WILC_WFIDrvHandle hWFIDrv, char* pBSSID,char T
 	if(s32Error)
 	{
 		WILC_ERRORREPORT(s32Error, s32Error);
-	}
-	WILC_CATCH(s32Error)
-	{
-	
-	}
+	}	
 
 	/*BugID_5222*/
 	WILC_SemaphoreAcquire(&hWaitResponse, NULL);
 
+	WILC_CATCH(s32Error)
+	{
+	
+	}
+	
 	return s32Error;	
 }
 
@@ -8686,14 +8694,15 @@ WILC_Sint32 host_int_del_All_Rx_BASession(WILC_WFIDrvHandle hWFIDrv, char* pBSSI
 	{
 		WILC_ERRORREPORT(s32Error, s32Error);
 	}
-	WILC_CATCH(s32Error)
-	{
-	
-	}
 
 	/*BugID_5222*/
 	WILC_SemaphoreAcquire(&hWaitResponse, NULL);
 
+	WILC_CATCH(s32Error)
+	{
+	
+	}
+	
 	return s32Error;	
 }
 
@@ -8827,6 +8836,7 @@ WILC_Sint32 host_int_get_tx_power(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 *tx_powe
 
 	strHostIFmsg.u16MsgId = HOST_IF_MSG_GET_TX_POWER;
 	strHostIFmsg.drvHandler=hWFIDrv;
+	strHostIFmsg.uniHostIFmsgBody.strHostIFGetTxPwr.u8TxPwr=tx_power;
 	/* send the message */
 	s32Error = WILC_MsgQueueSend(&gMsgQHostIF, &strHostIFmsg, sizeof(tstrHostIFmsg), WILC_NULL);
 	if(s32Error){
@@ -8835,8 +8845,6 @@ WILC_Sint32 host_int_get_tx_power(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 *tx_powe
 	}
 
 	WILC_SemaphoreAcquire(&hWaitResponse, NULL);	
-
-	*tx_power = strHostIFmsg.uniHostIFmsgBody.strHostIFTxPwr.u8TxPwr;
 
 	return s32Error;
 }
@@ -8861,3 +8869,4 @@ WILC_Sint32 host_int_set_antenna(WILC_WFIDrvHandle hWFIDrv, WILC_Uint8 antenna_m
 	}	
 	return s32Error;
 }
+

@@ -114,31 +114,46 @@
 #define WILC_GP_REG_0   0x149c
 #define WILC_GP_REG_1   0x14a0
 
-#define rHAVE_SDIO_IRQ_GPIO_BIT              (0)
-#define rHAVE_USE_PMU_BIT                    (1)
-#define rHAVE_SLEEP_CLK_SRC_RTC_BIT          (2)
-#define rHAVE_SLEEP_CLK_SRC_XO_BIT           (3)
-#define rHAVE_EXT_PA_INV_TX_RX_BIT           (4)
-#define rHAVE_LEGACY_RF_SETTINGS_BIT         (5)
-#define rHAVE_XTAL_24_BIT                    (6)
-#define rHAVE_DISABLE_WILC_UART_BIT          (7)
-#define rHAVE_USE_IRQ_AS_HOST_WAKE           (8)
-#define rHAVE_SIN_IP_ANT_DEV_MODULE_BIT      (9)
-#define rHAVE_DUL_IP_ANT_DEV_MODULE_BIT      (10)
+#define rHAVE_SDIO_IRQ_GPIO_BIT			(0)
+#define rHAVE_USE_PMU_BIT			(1)
+#define rHAVE_SLEEP_CLK_SRC_RTC_BIT		(2)
+#define rHAVE_SLEEP_CLK_SRC_XO_BIT		(3)
+#define rHAVE_EXT_PA_INV_TX_RX_BIT		(4)
+#define rHAVE_LEGACY_RF_SETTINGS_BIT		(5)
+#define rHAVE_XTAL_24_BIT			(6)
+#define rHAVE_DISABLE_WILC_UART_BIT		(7)
+#define rHAVE_USE_IRQ_AS_HOST_WAKE		(8)
+#define rHAVE_SIN_IP_ANT_DEV_MODULE_BIT		(9)
+#define rHAVE_DUL_IP_ANT_DEV_MODULE_BIT		(10)
 
 
 
-#define WILC_HAVE_SDIO_IRQ_GPIO         (1 << rHAVE_SDIO_IRQ_GPIO_BIT)
-#define WILC_HAVE_USE_PMU               (1 << rHAVE_USE_PMU_BIT)
-#define WILC_HAVE_SLEEP_CLK_SRC_RTC     (1 << rHAVE_SLEEP_CLK_SRC_RTC_BIT)
-#define WILC_HAVE_SLEEP_CLK_SRC_XO      (1 << rHAVE_SLEEP_CLK_SRC_XO_BIT)
-#define WILC_HAVE_EXT_PA_INV_TX_RX      (1 << rHAVE_EXT_PA_INV_TX_RX_BIT)
-#define WILC_HAVE_LEGACY_RF_SETTINGS    (1 << rHAVE_LEGACY_RF_SETTINGS_BIT)
-#define WILC_HAVE_XTAL_24               (1 << rHAVE_XTAL_24_BIT)
-#define WILC_HAVE_DISABLE_WILC_UART     (1 << rHAVE_DISABLE_WILC_UART_BIT)
-#define WILC_HAVE_USE_IRQ_AS_HOST_WAKE  (1 << rHAVE_USE_IRQ_AS_HOST_WAKE)
-#define WILC_HAVE_SIN_IP_ANT_DEV_MODULE (1 << rHAVE_SIN_IP_ANT_DEV_MODULE_BIT)
-#define WILC_HAVE_DUL_IP_ANT_DEV_MODULE (1 << rHAVE_DUL_IP_ANT_DEV_MODULE_BIT)
+#define WILC_HAVE_SDIO_IRQ_GPIO			(1 << rHAVE_SDIO_IRQ_GPIO_BIT)
+#define WILC_HAVE_USE_PMU			(1 << rHAVE_USE_PMU_BIT)
+#define WILC_HAVE_SLEEP_CLK_SRC_RTC		(1 << rHAVE_SLEEP_CLK_SRC_RTC_BIT)
+#define WILC_HAVE_SLEEP_CLK_SRC_XO		(1 << rHAVE_SLEEP_CLK_SRC_XO_BIT)
+#define WILC_HAVE_EXT_PA_INV_TX_RX		(1 << rHAVE_EXT_PA_INV_TX_RX_BIT)
+#define WILC_HAVE_LEGACY_RF_SETTINGS		(1 << rHAVE_LEGACY_RF_SETTINGS_BIT)
+#define WILC_HAVE_XTAL_24			(1 << rHAVE_XTAL_24_BIT)
+#define WILC_HAVE_DISABLE_WILC_UART		(1 << rHAVE_DISABLE_WILC_UART_BIT)
+#define WILC_HAVE_USE_IRQ_AS_HOST_WAKE		(1 << rHAVE_USE_IRQ_AS_HOST_WAKE)
+#define WILC_HAVE_SIN_IP_ANT_DEV_MODULE		(1 << rHAVE_SIN_IP_ANT_DEV_MODULE_BIT)
+#define WILC_HAVE_DUL_IP_ANT_DEV_MODULE		(1 << rHAVE_DUL_IP_ANT_DEV_MODULE_BIT)
+
+#ifdef WILC_SDIO
+#define WILC_WAKEUP_REG				0xF0
+#define WILC_WAKEUP_BIT				BIT0
+#define WILC_CLK_STATUS_REG			0xF1
+#define WILC_CLK_STATUS_BIT			BIT0
+#define WILC_FROM_INTERFACE_TO_WF_REG		0xFA
+#else
+#define WILC_WAKEUP_REG				0x01
+#define WILC_WAKEUP_BIT				BIT1
+#define WILC_CLK_STATUS_REG			0x0f
+#define WILC_CLK_STATUS_BIT			BIT2
+#define WILC_FROM_INTERFACE_TO_WF_REG		0x0B
+#endif /* WILC_SDIO */
+
 
 
 /********************************************
@@ -253,6 +268,7 @@ struct txq_entry_t {
 	struct txq_entry_t *next;
 	struct txq_entry_t *prev;
 	int type;
+	uint8_t q_num;
 	int tcp_PendingAck_index;
 	uint8_t *buffer;
 	int buffer_size;
@@ -327,5 +343,15 @@ typedef struct {
 #ifdef USE_ANTNENNA_SWITCHING
 uint32_t wilc_switch_current_antenna(unsigned char antenna_num);
 #endif
+
+#define NQUEUES 4
+#define VO_AC_COUNT_POS		25
+#define VO_AC_ACM_STAT_POS	24
+#define VI_AC_COUNT_POS		17
+#define VI_AC_ACM_STAT_POS	16
+#define BE_AC_COUNT_POS		9
+#define BE_AC_ACM_STAT_POS	8
+#define BK_AC_COUNT_POS		2	
+#define BK_AC_ACM_STAT_POS	1
 
 #endif

@@ -9,7 +9,7 @@ WILC_Uint32 WILC_TimeMsec(void)
 {
 	WILC_Uint32 u32Time = 0;
 	struct timespec current_time;
-
+        trap_init(); 
 	current_time = current_kernel_time();
 	u32Time = current_time.tv_sec * 1000;
 	u32Time += current_time.tv_nsec / 1000000;
